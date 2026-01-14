@@ -1,0 +1,194 @@
+name: code-review
+description: Multi-agent codebase review with automated synthesis
+version: 0.8.0-beta
+global: true
+
+# All agents use general-purpose type for direct file writing
+# Domain expertise is injected via prompt files - no capability loss
+instructions: instructions.md
+
+# Command interface
+usage: |
+  /code-review                           # Interactive mode - prompts for options
+  /code-review --preset alpha            # Pre-launch readiness review
+  /code-review --preset strategic        # Architecture + product direction
+  /code-review --preset full             # All 9 core agents
+  /code-review --preset quick            # Fast sanity check (3 agents)
+  /code-review --agents code,security,ux # Explicit agent selection
+  /code-review --gaming                  # Include gaming-specific agents
+
+# Output configuration
+output:
+  directory: docs/reviews
+  synthesis_file: REMEDIATION-PLAN.md
+
+# Presets define which agents run together
+presets:
+  alpha:
+    description: Pre-launch readiness review
+    agents: [code, security, performance, ux, qa]
+  strategic:
+    description: Long-term architecture and product direction
+    agents: [architecture, docs, product, qa]
+  full:
+    description: Comprehensive review with all core agents
+    agents: [code, security, performance, architecture, ux, qa, docs, dependencies, product]
+  quick:
+    description: Fast sanity check
+    agents: [code, security, ux]
+
+# Agent registry - ALL agents use general-purpose for write access
+# Domain expertise comes from prompt_file content
+agents:
+  # Core agents (9)
+  core:
+    code:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/code-reviewer.md
+      output_file: code-quality.md
+      focus: Code quality, dead code, type safety, bugs
+    security:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/security-auditor.md
+      output_file: security.md
+      focus: Auth, validation, OWASP, secrets
+    performance:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/performance-engineer.md
+      output_file: performance.md
+      focus: N+1 queries, algorithms, bundle size, memory
+    architecture:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/architecture-reviewer.md
+      output_file: architecture.md
+      focus: Folder structure, patterns, tech debt
+    ux:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/ux-reviewer.md
+      output_file: ux.md
+      focus: Accessibility, mobile, feedback, navigation
+    qa:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/qa-expert.md
+      output_file: qa.md
+      focus: Test coverage, flaky tests, CI/CD
+    docs:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/documentation-engineer.md
+      output_file: documentation.md
+      focus: Documentation gaps, duplication, onboarding
+    dependencies:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/dependencies-manager.md
+      output_file: dependencies.md
+      focus: Outdated packages, CVEs, version conflicts
+    product:
+      subagent_type: general-purpose
+      prompt_file: prompts/core/product-manager.md
+      output_file: product.md
+      focus: Feature completeness, roadmap, positioning
+
+  # Extended agents (12)
+  extended:
+    debug:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/debugger.md
+      output_file: debugging.md
+      focus: Complex issue diagnosis, root cause analysis
+    error:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/error-detective.md
+      output_file: error-analysis.md
+      focus: Error patterns, correlation, cascade prevention
+    chaos:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/chaos-engineer.md
+      output_file: chaos-analysis.md
+      focus: Resilience testing, failure scenarios, antifragility
+    accessibility:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/accessibility-tester.md
+      output_file: accessibility.md
+      focus: WCAG compliance, screen readers, keyboard nav
+    api:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/api-designer.md
+      output_file: api-review.md
+      focus: API consistency, documentation, developer experience
+    database:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/database-optimizer.md
+      output_file: database.md
+      focus: Query optimization, indexes, schema design
+    devops:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/devops-engineer.md
+      output_file: devops.md
+      focus: CI/CD, containerization, deployment
+    refactor:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/refactoring-specialist.md
+      output_file: refactoring.md
+      focus: Safe transformations, pattern improvements
+    dx:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/dx-optimizer.md
+      output_file: dx.md
+      focus: Build performance, tooling, developer experience
+    compliance:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/compliance-auditor.md
+      output_file: compliance.md
+      focus: Regulatory frameworks, data privacy, standards
+    pentest:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/penetration-tester.md
+      output_file: pentest.md
+      focus: Offensive security, vulnerability validation
+    technical-writer:
+      subagent_type: general-purpose
+      prompt_file: prompts/extended/technical-writer.md
+      output_file: tech-writing.md
+      focus: API docs, user guides, technical content
+
+  # Gaming module agents (4)
+  gaming:
+    balance:
+      subagent_type: general-purpose
+      prompt_file: prompts/gaming/balance-analyst.md
+      output_file: game-balance.md
+      focus: Economy loops, win rates, formula fairness
+    player-journey:
+      subagent_type: general-purpose
+      prompt_file: prompts/gaming/player-journey.md
+      output_file: player-experience.md
+      focus: Tutorial, friction points, onboarding flow
+    narrative:
+      subagent_type: general-purpose
+      prompt_file: prompts/gaming/narrative-reviewer.md
+      output_file: narrative.md
+      focus: Terminology, lore consistency, flavor text
+    quant:
+      subagent_type: general-purpose
+      prompt_file: prompts/gaming/quant-analyst.md
+      output_file: game-economy.md
+      focus: Game economy modeling, probability analysis
+
+# Synthesis configuration
+synthesis:
+  subagent_type: general-purpose
+  prompt_file: prompts/synthesis.md
+  output_file: REMEDIATION-PLAN.md
+  responsibilities:
+    - Read all domain reports from docs/reviews/
+    - Identify conflicts between agent recommendations
+    - Map dependencies between fixes
+    - Detect duplicate findings across agents
+    - Prioritize holistically (cross-domain critical > single-domain)
+    - Produce remediation plan with blocker issues, quick wins, grouped tasks
+
+# Execution settings
+execution:
+  max_parallel_agents: 6
+  allow_background: true  # Agents can write their own files now
+  output_format: markdown
