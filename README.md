@@ -1,10 +1,16 @@
-# Code Review Skill
+# Code Review Skill and Command
 
 **Version**: 0.8.0-beta | [Changelog](CHANGELOG.md)
 
-A global Claude Code skill that launches multiple specialized agents in parallel to review any codebase, automatically synthesizes findings, and produces a prioritized remediation plan.
+A global Claude Code skill and slash command that launches multiple specialized agents in parallel to review any codebase, automatically synthesizes findings, and produces a prioritized remediation plan.
 
 ## Installation
+
+### 1. Clone/Copy Skill Files
+
+Place the skill directory at `~/.claude/skills/code-review/`
+
+### 2. Register in Settings
 
 Add the following to your `~/.claude/settings.json`:
 
@@ -19,6 +25,22 @@ Add the following to your `~/.claude/settings.json`:
   }
 }
 ```
+
+### 3. Register Slash Command
+
+Copy the command file to enable `/code-review`:
+
+```bash
+cp ~/.claude/skills/code-review/commands/code-review.md ~/.claude/commands/
+```
+
+Or create `~/.claude/commands/code-review.md` manually (see `commands/code-review.md` in this repo for the full template).
+
+**Note**: The filename must match the skill name. If you rename the skill, rename both the command file and update `skill.yaml`.
+
+### 4. Restart Claude Code
+
+Start a new session for changes to take effect.
 
 ## Manual Usage (Without Slash Command)
 
@@ -229,6 +251,15 @@ The validator checks:
 See `tests/README.md` for fixture documentation.
 
 ## Troubleshooting
+
+### Slash Command Not Found
+
+If `/code-review` isn't recognized:
+
+1. **Check command file exists**: `ls ~/.claude/commands/code-review.md`
+2. **Verify filename matches skill name**: The command filename must match the `name:` field in `skill.yaml`
+3. **Restart Claude Code**: Start a new session after adding/renaming command files
+4. **Check for stale names**: If you renamed the skill, ensure both `skill.yaml` and the command file use the new name
 
 ### Agent Fails or Times Out
 If an agent doesn't complete:
