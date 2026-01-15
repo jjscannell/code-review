@@ -1,4 +1,3 @@
----
 
 ## [0.8.1-beta] - 2026-01-14
 
@@ -14,7 +13,7 @@
 ### Changed
 - **ID scheme**: Changed from severity-prefixed (C1/H1/M1) to sequential (#1, #2, #3) with severity as separate field
 
----
+
 
 ## [0.7.0-alpha] - 2026-01-10
 
